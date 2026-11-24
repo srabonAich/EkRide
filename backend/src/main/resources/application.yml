@@ -1,0 +1,50 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: ekride-backend
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/${DB_NAME:map_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+ekride:
+  jwt:
+    secret: "${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}"
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000} # 24 hours
+  google:
+    api-key: "${GOOGLE_MAPS_API_KEY:}"
+    api-key-file: "${GOOGLE_MAPS_API_KEY_FILE:Api-key.txt}"
+    demo-mode-fallback: ${DEMO_MODE_FALLBACK:true}
+  fare:
+    base-fare: ${BASE_FARE:50.00}
+    per-km-rate: ${PER_KM_RATE:25.00}
+    per-minute-rate: ${PER_MINUTE_RATE:0.00}
+    minimum-fare: ${MINIMUM_FARE:60.00}
+    platform-fee-percent: ${PLATFORM_FEE_PERCENT:10.00}
+    shared-discount-percent: 25.00
+  matching:
+    max-search-radius-meters: ${MAX_SEARCH_RADIUS_METERS:3000.0}
+    max-detour-meters: ${MAX_DETOUR_METERS:4000.0}
+    max-detour-minutes: ${MAX_DETOUR_MINUTES:15.0}
+  cors:
+    allowed-origins:
+      - "http://localhost:*"
+      - "http://127.0.0.1:*"

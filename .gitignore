@@ -1,0 +1,61 @@
+# =====================================================================
+# EkRide .gitignore
+# =====================================================================
+
+# Environment & Secrets (NEVER COMMIT SENSITIVE API KEYS)
+.env
+.env.local
+.env.*.local
+Api-key.txt
+*.key
+*.pem
+
+# Logs & Runtime Output
+*.log
+backend.log
+frontend.log
+logs/
+
+# Java / Maven Build Artifacts
+backend/target/
+**/target/
+*.class
+.mvn/
+*.jar
+*.war
+
+# Flutter / Dart Build Artifacts & Cache
+frontend/build/
+**/build/
+.dart_tool/
+frontend/.dart_tool/
+.flutter-plugins
+frontend/.flutter-plugins
+.flutter-plugins-dependencies
+frontend/.flutter-plugins-dependencies
+.pub-cache/
+frontend/.pub-cache/
+.pub/
+frontend/.pub/
+frontend/.metadata
+frontend/.last_build_id
+app.*.symbols
+app.*.map.json
+
+# IDEs & Code Editors
+.idea/
+frontend/.idea/
+*.iml
+frontend/*.iml
+*.ipr
+*.iws
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*~

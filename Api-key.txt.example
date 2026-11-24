@@ -1,0 +1,4 @@
+# Replace this text with your Google Maps Platform API key (starts with AIzaSy...)
+# Or set GOOGLE_MAPS_API_KEY in your .env file.
+# Note: If no key is provided, EkRide automatically operates in demo mode using OSRM!
+YOUR_GOOGLE_MAPS_API_KEY
