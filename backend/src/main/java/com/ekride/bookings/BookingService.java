@@ -2,6 +2,7 @@ package com.ekride.bookings;
 
 import com.ekride.bookings.dto.BookingDto;
 import com.ekride.bookings.dto.CreateBookingRequest;
+import com.ekride.messenger.service.ConversationService;
 import com.ekride.rides.*;
 import com.ekride.users.User;
 import com.ekride.users.UserRepository;
@@ -18,16 +19,19 @@ public class BookingService {
     private final RideRepository rideRepository;
     private final RideStopRepository stopRepository;
     private final UserRepository userRepository;
+    private final ConversationService conversationService;
 
     public BookingService(
             BookingRepository bookingRepository,
             RideRepository rideRepository,
             RideStopRepository stopRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            ConversationService conversationService) {
         this.bookingRepository = bookingRepository;
         this.rideRepository = rideRepository;
         this.stopRepository = stopRepository;
         this.userRepository = userRepository;
+        this.conversationService = conversationService;
     }
 
     @Transactional
@@ -93,6 +97,9 @@ public class BookingService {
         dropoffStop.setAddress(booking.getDropoffAddress());
         stopRepository.save(dropoffStop);
 
+        // Add passenger to the ride's conversation (and dynamically upgrade to GROUP if 3+ riders)
+        conversationService.addParticipantToRide(ride.getId(), passengerId);
+
         User passenger = userRepository.findById(passengerId).orElse(null);
         return BookingDto.fromEntity(savedBooking, passenger != null ? passenger.getFullName() : "Passenger");
     }
@@ -131,6 +138,9 @@ public class BookingService {
             ride.setAvailableSeats(Math.min(ride.getTotalSeats(), ride.getAvailableSeats() + booking.getSeatsBooked()));
             rideRepository.save(ride);
         }
+
+        // Notify and mark left in conversation
+        conversationService.removeParticipantFromRide(booking.getRideId(), booking.getPassengerId());
 
         User passenger = userRepository.findById(userId).orElse(null);
         return BookingDto.fromEntity(booking, passenger != null ? passenger.getFullName() : "Passenger");

@@ -16,6 +16,8 @@ dependencies:
   latlong2: ^0.10.1
   google_fonts: ^6.3.2
   url_launcher: ^6.3.2
+  stomp_dart_client: ^3.0.1
+  web_socket: ^1.0.1
 
 dev_dependencies:
   flutter_test:

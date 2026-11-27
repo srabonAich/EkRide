@@ -5,6 +5,8 @@ import 'package:ekride_frontend/services/api_service.dart';
 import 'package:ekride_frontend/services/app_settings_provider.dart';
 import 'package:ekride_frontend/services/auth_provider.dart';
 import 'package:ekride_frontend/services/ride_provider.dart';
+import 'package:ekride_frontend/services/chat_socket_service.dart';
+import 'package:ekride_frontend/services/chat_provider.dart';
 import 'package:ekride_frontend/screens/auth_screen.dart';
 import 'package:ekride_frontend/screens/main_screen.dart';
 
@@ -18,13 +20,29 @@ class EkRideApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final apiService = ApiService();
+    final socketService = ChatSocketService();
 
     return MultiProvider(
       providers: [
         Provider<ApiService>.value(value: apiService),
+        Provider<ChatSocketService>.value(value: socketService),
         ChangeNotifierProvider(create: (_) => AppSettingsProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider(apiService)),
         ChangeNotifierProvider(create: (_) => RideProvider(apiService)),
+        ChangeNotifierProxyProvider<AuthProvider, ChatProvider>(
+          create: (ctx) => ChatProvider(
+            apiService: apiService,
+            socketService: socketService,
+          ),
+          update: (ctx, auth, chat) {
+            chat ??= ChatProvider(
+              apiService: apiService,
+              socketService: socketService,
+            );
+            chat.updateAuthToken(auth.token);
+            return chat;
+          },
+        ),
       ],
       child: Consumer<AppSettingsProvider>(
         builder: (context, appSettings, _) {

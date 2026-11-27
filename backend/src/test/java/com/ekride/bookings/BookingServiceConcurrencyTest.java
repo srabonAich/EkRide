@@ -1,6 +1,7 @@
 package com.ekride.bookings;
 
 import com.ekride.bookings.dto.CreateBookingRequest;
+import com.ekride.messenger.service.ConversationService;
 import com.ekride.rides.*;
 import com.ekride.routes.dto.LocationDto;
 import com.ekride.users.User;
@@ -25,8 +26,9 @@ class BookingServiceConcurrencyTest {
         RideRepository rideRepo = Mockito.mock(RideRepository.class);
         RideStopRepository stopRepo = Mockito.mock(RideStopRepository.class);
         UserRepository userRepo = Mockito.mock(UserRepository.class);
+        ConversationService convService = Mockito.mock(ConversationService.class);
 
-        BookingService bookingService = new BookingService(bookingRepo, rideRepo, stopRepo, userRepo);
+        BookingService bookingService = new BookingService(bookingRepo, rideRepo, stopRepo, userRepo, convService);
 
         Ride ride = new Ride();
         ride.setId(10L);
@@ -58,8 +60,9 @@ class BookingServiceConcurrencyTest {
         RideRepository rideRepo = Mockito.mock(RideRepository.class);
         RideStopRepository stopRepo = Mockito.mock(RideStopRepository.class);
         UserRepository userRepo = Mockito.mock(UserRepository.class);
+        ConversationService convService = Mockito.mock(ConversationService.class);
 
-        BookingService bookingService = new BookingService(bookingRepo, rideRepo, stopRepo, userRepo);
+        BookingService bookingService = new BookingService(bookingRepo, rideRepo, stopRepo, userRepo, convService);
 
         Ride ride = new Ride();
         ride.setId(20L);

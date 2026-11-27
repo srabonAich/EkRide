@@ -20,7 +20,16 @@ echo "Checking PostgreSQL connection on $DB_HOST:$DB_PORT ($DB_NAME)..."
 
 # Helper function to test DB connection
 check_db_ready() {
-    PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" >/dev/null 2>&1
+    if command -v psql >/dev/null 2>&1; then
+        PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" >/dev/null 2>&1
+        return $?
+    elif command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' 2>/dev/null | grep -q "^ekride-postgres$"; then
+        docker exec ekride-postgres pg_isready -U "$DB_USER" -d "$DB_NAME" >/dev/null 2>&1
+        return $?
+    else
+        python3 -c "import socket; s = socket.socket(); s.settimeout(1); s.connect(('$DB_HOST', int('$DB_PORT')))" >/dev/null 2>&1
+        return $?
+    fi
 }
 
 # 1. Already running?

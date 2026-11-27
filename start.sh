@@ -60,7 +60,7 @@ done
 echo "[3/3] Starting Frontend Web Server on http://localhost:${FRONTEND_PORT}..."
 cd "$PROJECT_DIR"
 if [ "$IS_BG" = true ]; then
-    setsid python3 "$PROJECT_DIR/scripts/serve_web.py" "$FRONTEND_PORT" </dev/null > "$PROJECT_DIR/logs/frontend.log" 2>&1 &
+    nohup python3 "$PROJECT_DIR/scripts/serve_web.py" "$FRONTEND_PORT" > "$PROJECT_DIR/logs/frontend.log" 2>&1 &
     FRONTEND_PID=$!
     echo "Frontend process launched (PID: $FRONTEND_PID, Log: logs/frontend.log)"
     echo ""

@@ -5,6 +5,8 @@ import 'package:ekride_frontend/models/place.dart';
 import 'package:ekride_frontend/models/candidate.dart';
 import 'package:ekride_frontend/models/route_option.dart';
 import 'package:ekride_frontend/models/booking.dart';
+import 'package:ekride_frontend/models/chat_message.dart';
+import 'package:ekride_frontend/models/conversation.dart';
 
 class ApiService {
   static const String baseUrl = 'http://localhost:8080/api/v1';
@@ -245,5 +247,59 @@ class ApiService {
       'isSimulated': isSimulated,
     });
     await http.post(uri, headers: _headers, body: body);
+  }
+
+  // --- In-App Messenger Endpoints ---
+
+  Future<List<ConversationSummary>> getConversations() async {
+    final response = await http.get(Uri.parse('$baseUrl/conversations'), headers: _headers);
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200 && data['success'] == true) {
+      final list = data['data'] as List;
+      return list.map((e) => ConversationSummary.fromJson(e)).toList();
+    }
+    return [];
+  }
+
+  Future<ConversationSummary> getConversationByRide(int rideId) async {
+    final response = await http.get(Uri.parse('$baseUrl/conversations/by-ride/$rideId'), headers: _headers);
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200 && data['success'] == true) {
+      return ConversationSummary.fromJson(data['data']);
+    }
+    throw Exception(data['message'] ?? 'Failed to load conversation for ride #$rideId');
+  }
+
+  Future<List<ChatMessage>> getMessages(int conversationId, {int page = 0, int size = 40}) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/conversations/$conversationId/messages?page=$page&size=$size'),
+      headers: _headers,
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200 && data['success'] == true) {
+      final list = data['data'] as List;
+      return list.map((e) => ChatMessage.fromJson(e)).toList();
+    }
+    return [];
+  }
+
+  Future<ChatMessage> sendMessageRest(int conversationId, String content) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/conversations/$conversationId/messages'),
+      headers: _headers,
+      body: jsonEncode({'content': content}),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode == 200 && data['success'] == true) {
+      return ChatMessage.fromJson(data['data']);
+    }
+    throw Exception(data['message'] ?? 'Failed to send message');
+  }
+
+  Future<void> markAsRead(int conversationId) async {
+    await http.post(
+      Uri.parse('$baseUrl/conversations/$conversationId/read'),
+      headers: _headers,
+    );
   }
 }

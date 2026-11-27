@@ -4,6 +4,8 @@ import 'package:ekride_frontend/core/theme.dart';
 import 'package:ekride_frontend/services/app_settings_provider.dart';
 import 'package:ekride_frontend/services/auth_provider.dart';
 import 'package:ekride_frontend/services/ride_provider.dart';
+import 'package:ekride_frontend/services/chat_provider.dart';
+import 'package:ekride_frontend/screens/messenger_screen.dart';
 import 'package:ekride_frontend/widgets/interactive_map_view.dart';
 import 'package:ekride_frontend/widgets/route_option_card.dart';
 import 'package:ekride_frontend/widgets/fare_breakdown_dialog.dart';
@@ -419,6 +421,47 @@ class _MainScreenState extends State<MainScreen> {
               appSettings.tr('my_rides'),
               style: TextStyle(color: textPrimary, fontWeight: FontWeight.w700, fontSize: 12.5),
             ),
+          ),
+          const SizedBox(width: 8),
+
+          // 3.5 In-App Messenger Navigation
+          Consumer<ChatProvider>(
+            builder: (context, chat, _) {
+              final unread = chat.totalUnreadCount;
+              return TextButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const MessengerScreen()),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: unread > 0
+                      ? AppTheme.primary.withValues(alpha: 0.15)
+                      : AppTheme.getSurfaceLight(isDark),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: Badge(
+                  isLabelVisible: unread > 0,
+                  label: Text('$unread', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10)),
+                  backgroundColor: AppTheme.primary,
+                  textColor: Colors.black,
+                  child: Icon(
+                    Icons.chat_bubble_outline_rounded,
+                    color: unread > 0 ? AppTheme.primary : AppTheme.primaryLight,
+                    size: 16,
+                  ),
+                ),
+                label: Text(
+                  isBn ? 'মেসেজ' : 'Messages',
+                  style: TextStyle(
+                    color: unread > 0 ? AppTheme.primary : textPrimary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12.5,
+                  ),
+                ),
+              );
+            },
           ),
           const SizedBox(width: 8),
 

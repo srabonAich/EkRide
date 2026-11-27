@@ -4,6 +4,8 @@ import 'package:ekride_frontend/core/theme.dart';
 import 'package:ekride_frontend/models/booking.dart';
 import 'package:ekride_frontend/services/api_service.dart';
 import 'package:ekride_frontend/services/ride_provider.dart';
+import 'package:ekride_frontend/services/chat_provider.dart';
+import 'package:ekride_frontend/screens/messenger_screen.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key});
@@ -68,7 +70,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                         color: AppTheme.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: isConfirmed ? AppTheme.primary.withOpacity(0.5) : AppTheme.border,
+                          color: isConfirmed ? AppTheme.primary.withValues(alpha: 0.5) : AppTheme.border,
                         ),
                       ),
                       child: Column(
@@ -84,7 +86,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: isConfirmed ? AppTheme.primary.withOpacity(0.15) : AppTheme.border,
+                                  color: isConfirmed ? AppTheme.primary.withValues(alpha: 0.15) : AppTheme.border,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
@@ -139,6 +141,23 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppTheme.primary,
                                         foregroundColor: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    ElevatedButton.icon(
+                                      onPressed: () {
+                                        context.read<ChatProvider>().openConversationByRide(b.rideId);
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) => MessengerScreen(initialRideId: b.rideId),
+                                          ),
+                                        );
+                                      },
+                                      icon: const Icon(Icons.chat_bubble_outline_rounded, size: 16),
+                                      label: const Text('Chat'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.violet,
+                                        foregroundColor: Colors.white,
                                       ),
                                     ),
                                     const SizedBox(width: 8),

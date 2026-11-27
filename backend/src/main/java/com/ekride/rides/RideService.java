@@ -2,6 +2,7 @@ package com.ekride.rides;
 
 import com.ekride.common.ApiResponse;
 import com.ekride.fare.service.FareCalculationService;
+import com.ekride.messenger.service.ConversationService;
 import com.ekride.rides.dto.CreateRideRequest;
 import com.ekride.rides.dto.RideDto;
 import com.ekride.routes.dto.RouteCalculationResult;
@@ -23,18 +24,21 @@ public class RideService {
     private final UserRepository userRepository;
     private final RouteService routeService;
     private final FareCalculationService fareCalculationService;
+    private final ConversationService conversationService;
 
     public RideService(
             RideRepository rideRepository,
             RideStopRepository stopRepository,
             UserRepository userRepository,
             RouteService routeService,
-            FareCalculationService fareCalculationService) {
+            FareCalculationService fareCalculationService,
+            ConversationService conversationService) {
         this.rideRepository = rideRepository;
         this.stopRepository = stopRepository;
         this.userRepository = userRepository;
         this.routeService = routeService;
         this.fareCalculationService = fareCalculationService;
+        this.conversationService = conversationService;
     }
 
     @Transactional
@@ -63,6 +67,9 @@ public class RideService {
         ride.setDepartureTime(Instant.now());
 
         Ride savedRide = rideRepository.save(ride);
+
+        // Initialize Chat Conversation for Ride
+        conversationService.createConversationForRide(savedRide);
 
         // Create Origin and Destination Stops
         RideStop originStop = new RideStop();
